@@ -22,6 +22,6 @@ jobs:
       with:
         file: Dockerfile
         push: true
-        tags: LarsTi/map:latest
+        tags: map:latest
         github_token: ${{ secrets.GITHUB_TOKEN }}
       
