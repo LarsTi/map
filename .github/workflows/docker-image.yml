@@ -23,7 +23,7 @@ jobs:
         context: frontend/.
         file: frontend/Dockerfile
         push: true
-        tags: ${{ github.actor }}/${{ github.repository }}:latest
+        tags: ${{ github.repository }}:latest
         secrets: |
           GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
       
