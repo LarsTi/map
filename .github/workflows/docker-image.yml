@@ -23,6 +23,4 @@ jobs:
         file: Dockerfile
         push: true
         tags: map:latest
-        secrets: |
-          GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
       
