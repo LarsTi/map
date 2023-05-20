@@ -24,6 +24,4 @@ jobs:
         registry: ghcr.io
         push: true
         tags: map:latest
-        secrets: |
-          GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
       
