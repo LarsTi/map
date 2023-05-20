@@ -22,6 +22,6 @@ jobs:
       with:
         file: Dockerfile
         push: true
-        tags: map:latest
+        tags: ${{ github.repository }}:latest
         github_token: ${{ secrets.GITHUB_TOKEN }}
       
