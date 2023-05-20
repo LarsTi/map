@@ -1,0 +1,19 @@
+<div class="grid">
+    <div class="col-10">
+        <div id="map" class="map"></div>
+    </div>
+    <div class="col-2">
+        <p-panel *ngIf="this.map" header="Map Informationen">
+            <p>Zoom-Level: {{ this.map!.getZoom() }}</p>
+            <p>geladene Punkte: {{this.sortedData.length}}</p>
+            
+            <p-fileUpload *ngIf="!uploaded" mode="basic" url="/" chooseLabel="Upload csv" name="csv" (onSend)="onFileUpload($event)" [auto]="true"></p-fileUpload>
+        </p-panel> 
+        <p-panel header="Top 10 Postleitzahlen">
+            <ng-template ngFor let-element [ngForOf]="this.top10">
+                <p>{{ element.name }} ({{element.postcode}}): {{ element.count }} </p>
+            </ng-template>
+        </p-panel> 
+        
+    </div>
+</div>

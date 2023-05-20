@@ -1,14 +1,36 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from "@angular/router";
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
+import { MapComponent } from './map/map.component';
+import { PrecompileComponent } from './precompile/precompile.component';
 
+import { PanelModule } from 'primeng/panel';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FileUploadModule } from 'primeng/fileupload';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MapComponent,
+    PrecompileComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule,
+    PanelModule,
+    BrowserAnimationsModule,
+    FileUploadModule,
+    RouterModule.forRoot([
+      {
+        path: "",
+        component: MapComponent
+      },
+      {
+        path: "precompile",
+        component: PrecompileComponent
+      }])
   ],
   providers: [],
   bootstrap: [AppComponent]
