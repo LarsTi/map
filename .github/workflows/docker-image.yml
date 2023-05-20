@@ -24,4 +24,5 @@ jobs:
         registry: ghcr.io
         push: true
         tags: map:latest
+        github_token: ${{ secrets.GITHUB_TOKEN }}
       
