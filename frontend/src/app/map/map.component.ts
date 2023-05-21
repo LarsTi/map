@@ -79,7 +79,6 @@ export class MapComponent implements OnInit {
           this.createHeatData(data);
         }
         this.displayError()
-        debugger;
       },
       false
     );
@@ -142,7 +141,7 @@ export class MapComponent implements OnInit {
         })
       }
     })
-    ret.sort((a, b) => (a.count > b.count) ? -1 : 1)
+    ret.sort((a, b) => (Number(a.count) < Number(b.count)) ? 1 : -1)
     return ret;
   }
   createHeatData(countData: countData[]): void {
