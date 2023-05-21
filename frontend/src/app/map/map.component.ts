@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 import { jsonService } from '../json-service';
 import { Observable, forkJoin, tap } from 'rxjs';
@@ -15,19 +15,26 @@ interface countData {
   "count": number,
   "postcode": string
 }
-
+interface displayLayer {
+  an: boolean,
+  text: string,
+  layer: L.LayerGroup | L.HeatLayer
+}
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
   providers: [jsonService]
 })
+
 export class MapComponent implements OnInit {
   map: L.Map | undefined;
   private hashes: any = {};
   sortedData: dataPoint[] = [];
   top10: dataPoint[] = [];
   uploaded: boolean = false;
+  errorList: { text: string }[] = [];
+  layerList: displayLayer[] = [];
   constructor(private jsProvider: jsonService) {
 
   }
@@ -53,10 +60,17 @@ export class MapComponent implements OnInit {
           let count = <number><unknown>line.split(";")[1],
             postcode = line.split(";")[0];
           if (count > 0 && postcode) {
-            data.push({
-              "count": count,
-              "postcode": postcode
-            })
+            if (this.hashes[postcode]) {
+              data.push({
+                "count": count,
+                "postcode": postcode
+              })
+            } else {
+              this.errorList.push({ text: "Postleitzahl ungültig: " + postcode });
+            }
+
+          } else {
+            this.errorList.push({ text: "Fehlerhaftes Format oder 0 Wert: " + line });
           }
 
         }
@@ -64,6 +78,8 @@ export class MapComponent implements OnInit {
           this.uploaded = true;
           this.createHeatData(data);
         }
+        this.displayError()
+        debugger;
       },
       false
     );
@@ -76,7 +92,6 @@ export class MapComponent implements OnInit {
       return;
     }
     let top10: dataPoint[] = []
-    debugger;
     this.sortedData.forEach(element => {
       if (this.map!.getBounds().contains(element.LatLng)) {
         if (top10.length < 10) {
@@ -107,18 +122,10 @@ export class MapComponent implements OnInit {
 
     const requests: Observable<any>[] = [];
 
-    /*
-    let countData: any;
-    requests.push(this.jsProvider.getSubscription("heatdata.json").pipe(tap((data: any) => {
-      countData = data.data;
-    })));
-    */
     requests.push(this.jsProvider.getSubscription("plz.hash.json").pipe(tap(data => {
       this.hashes = data;
     })));
     forkJoin(requests).subscribe(() => {
-
-      //this.createHeatData(countData);
 
       console.log('All subscriptions done');
     });
@@ -144,10 +151,7 @@ export class MapComponent implements OnInit {
     countData.forEach(element => {
       if (this.hashes[element.postcode]) {
         const hash = this.hashes[element.postcode];
-        if (!hash) {
-          console.log(element.postcode + " not found in hashes");
-          return;
-        }
+
         heatLayer.addLatLng(new L.LatLng(hash.lat, hash.lng, element.count))
 
         markerLayer.addLayer(L.marker([hash.lat, hash.lng], {}).bindPopup(hash.name + " (" + element.postcode + "): " + element.count, { autoClose: true }));
@@ -158,18 +162,31 @@ export class MapComponent implements OnInit {
 
     this.getTop10Listed();
 
+    this.layerList.push({
+      an: true,
+      text: "Heatmap",
+      layer: heatLayer
+    })
+    this.layerList.push({
+      an: false,
+      text: "Datenpunkte auf Karte",
+      layer: markerLayer
+    })
 
-    let map = this.map!;
-    if (map.getZoom() >= 11) {
-      map.addLayer(markerLayer)
+  }
+  displayError() {
+    if (this.errorList.length > 0) {
+      this.errorList = [... this.errorList];
     }
-    map.on("zoom", function () {
-      if (map.getZoom() < 11) {
-        map.removeLayer(markerLayer)
-      } else {
-        map.addLayer(markerLayer);
-      }
-    });
+  }
+  onToggleLayer(displayLayer: displayLayer) {
+    if (displayLayer.an) {
+      displayLayer.an = false;
+      this.map?.removeLayer(displayLayer.layer);
+    } else {
+      displayLayer.an = true;
+      displayLayer.layer.addTo(this.map!)
+    }
   }
 
 }

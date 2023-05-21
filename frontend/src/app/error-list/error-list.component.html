@@ -1,0 +1,7 @@
+<p-dialog header="Fehler" [(visible)]="visible" [style]="{width: '50vw'}" [modal]="true" position="bottom" [draggable]="false" (onHide)="onHide">
+    <h4>Folgende Datensätze können nicht verarbeitet werden</h4> 
+    <ng-template ngFor let-element [ngForOf]="this.error">
+        <p>{{ element.text }}</p>
+    </ng-template>
+    <small>Bitte schicken Sie diese Liste an tilsner.io</small>
+</p-dialog>
