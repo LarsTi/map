@@ -11,7 +11,7 @@ interface dataPoint {
   "name": string,
   "LatLng": L.LatLng
 }
-interface countData{
+interface countData {
   "count": number,
   "postcode": string
 }
@@ -51,16 +51,16 @@ export class MapComponent implements OnInit {
             continue
           }
           let count = <number><unknown>line.split(";")[1],
-              postcode = line.split(";")[0];
-          if(count > 0 && postcode){
+            postcode = line.split(";")[0];
+          if (count > 0 && postcode) {
             data.push({
               "count": count,
               "postcode": postcode
             })
           }
-          
+
         }
-        if(data.length > 0){
+        if (data.length > 0) {
           this.uploaded = true;
           this.createHeatData(data);
         }
@@ -76,6 +76,7 @@ export class MapComponent implements OnInit {
       return;
     }
     let top10: dataPoint[] = []
+    debugger;
     this.sortedData.forEach(element => {
       if (this.map!.getBounds().contains(element.LatLng)) {
         if (top10.length < 10) {
@@ -105,7 +106,7 @@ export class MapComponent implements OnInit {
     }
 
     const requests: Observable<any>[] = [];
-    
+
     /*
     let countData: any;
     requests.push(this.jsProvider.getSubscription("heatdata.json").pipe(tap((data: any) => {
@@ -125,12 +126,14 @@ export class MapComponent implements OnInit {
   sortData(countData: any[]): any[] {
     let ret: any[] = [];
     countData.forEach(element => {
-      ret.push({
-        "count": element.count,
-        "postcode": element.postcode,
-        "name": this.hashes[element.postcode].name,
-        "LatLng": new L.LatLng(this.hashes[element.postcode].lat, this.hashes[element.postcode].lng)
-      })
+      if (this.hashes[element.postcode]) {
+        ret.push({
+          "count": element.count,
+          "postcode": element.postcode,
+          "name": this.hashes[element.postcode].name,
+          "LatLng": new L.LatLng(this.hashes[element.postcode].lat, this.hashes[element.postcode].lng)
+        })
+      }
     })
     ret.sort((a, b) => (a.count > b.count) ? -1 : 1)
     return ret;
@@ -141,7 +144,7 @@ export class MapComponent implements OnInit {
     countData.forEach(element => {
       if (this.hashes[element.postcode]) {
         const hash = this.hashes[element.postcode];
-        if(!hash){
+        if (!hash) {
           console.log(element.postcode + " not found in hashes");
           return;
         }
