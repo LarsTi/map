@@ -57,11 +57,32 @@ export class MapComponent implements OnInit {
             header = false;
             continue
           }
-          line.replaceAll('"','');
-          line.replaceAll("'",'');
+          line.replaceAll('"', '');
+          line.replaceAll("'", '');
           let count = <number><unknown>line.split(";")[1],
             postcode = line.split(";")[0];
-
+          //führende 0en an postleitzahl
+          switch (postcode.length) {
+            case 5:
+              break;
+            case 4:
+              postcode = "0" + postcode;
+              break
+            case 3:
+              postcode = "00" + postcode;
+              break
+            case 2:
+              postcode = "000" + postcode;
+              break
+            case 1:
+              postcode = "0000" + postcode;
+              break;
+            default:
+              break;
+          }
+          if (postcode.length > 5) {
+            continue;
+          }
           if (count > 0 && postcode) {
             if (this.hashes[postcode]) {
               data.push({
